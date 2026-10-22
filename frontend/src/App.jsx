@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import "./App.css";
 
@@ -57,6 +56,8 @@ const formatPrice = (price) => `৳${price.toLocaleString("en-BD")}`;
 function App() {
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
@@ -64,6 +65,31 @@ function App() {
     (total, item) => total + item.price * item.quantity,
     0
   );
+
+  const filteredProducts = products.filter((product) => {
+    const query = searchQuery.trim().toLowerCase();
+
+    const matchesSearch =
+      product.name.toLowerCase().includes(query) ||
+      product.category.toLowerCase().includes(query);
+
+    const matchesCategory =
+      selectedCategory === "All" ||
+      product.category === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
+
+  const scrollToProducts = () => {
+    document.getElementById("products")?.scrollIntoView({
+      behavior: "smooth",
+    });
+  };
+
+  const chooseCategory = (categoryName) => {
+    setSelectedCategory(categoryName);
+    scrollToProducts();
+  };
 
   const addToCart = (product) => {
     setCart((currentCart) => {
@@ -134,12 +160,22 @@ function App() {
         </nav>
 
         <div className="header-actions">
-          <a href="#products" aria-label="Search products">
+          <button
+            className="header-search-button"
+            type="button"
+            aria-label="Search products"
+            onClick={() => {
+              scrollToProducts();
+              document.getElementById("product-search")?.focus();
+            }}
+          >
             ⌕
-          </a>
+          </button>
+
           <a href="#account" aria-label="Account">
             ♙
           </a>
+
           <button
             className="cart-trigger"
             type="button"
@@ -217,23 +253,31 @@ function App() {
               </h2>
             </div>
 
-            <a className="text-link" href="#products">
-              View all categories ↗
-            </a>
+            <button
+              className="text-link category-reset-link"
+              type="button"
+              onClick={() => chooseCategory("All")}
+            >
+              View all products ↗
+            </button>
           </div>
 
           <div className="category-grid">
             {categories.map((category, index) => (
-              <a
-                className="category-card"
-                href="#products"
+              <button
+                className={`category-card ${
+                  selectedCategory === category.name ? "is-selected" : ""
+                }`}
+                type="button"
                 key={category.name}
+                aria-pressed={selectedCategory === category.name}
+                onClick={() => chooseCategory(category.name)}
               >
                 <span className="category-number">0{index + 1}</span>
                 <span className="category-symbol">{category.symbol}</span>
                 <span className="category-name">{category.name}</span>
                 <span className="category-arrow">↗</span>
-              </a>
+              </button>
             ))}
           </div>
         </section>
@@ -250,51 +294,141 @@ function App() {
               </p>
             </div>
 
-            <a className="text-link" href="#products">
+            <button
+              className="text-link shop-all-button"
+              type="button"
+              onClick={() => {
+                setSelectedCategory("All");
+                setSearchQuery("");
+              }}
+            >
               Shop all products ↗
-            </a>
+            </button>
           </div>
 
-          <div className="product-grid">
-            {products.map((product) => (
-              <article className="product-card" key={product.id}>
-                <a
-                  className="product-image"
-                  href="#products"
-                  aria-label={`View ${product.name}`}
-                >
-                  <img src={product.image} alt={product.name} />
+          <div className="product-discovery">
+            <label className="product-search-box" htmlFor="product-search">
+              <span aria-hidden="true">⌕</span>
+              <input
+                id="product-search"
+                type="search"
+                placeholder="Search products or categories..."
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+              />
 
-                  {product.tag && (
-                    <span className="product-tag">{product.tag}</span>
-                  )}
-                </a>
-
-                <div className="product-info">
-                  <div>
-                    <p className="product-category">{product.category}</p>
-                    <h3>{product.name}</h3>
-                  </div>
-
-                  <div className="product-price">
-                    <span>{formatPrice(product.price)}</span>
-
-                    {product.oldPrice && (
-                      <del>{formatPrice(product.oldPrice)}</del>
-                    )}
-                  </div>
-                </div>
-
+              {searchQuery && (
                 <button
-                  className="add-button"
                   type="button"
-                  onClick={() => addToCart(product)}
+                  className="clear-search-button"
+                  aria-label="Clear search"
+                  onClick={() => setSearchQuery("")}
                 >
-                  Add to cart <span>+</span>
+                  ×
                 </button>
-              </article>
-            ))}
+              )}
+            </label>
+
+            <div className="filter-row" aria-label="Filter by category">
+              <span className="filter-label">Category</span>
+
+              <div className="filter-buttons">
+                <button
+                  className={`filter-chip ${
+                    selectedCategory === "All" ? "active" : ""
+                  }`}
+                  type="button"
+                  aria-pressed={selectedCategory === "All"}
+                  onClick={() => setSelectedCategory("All")}
+                >
+                  All products
+                </button>
+
+                {categories.map((category) => (
+                  <button
+                    className={`filter-chip ${
+                      selectedCategory === category.name ? "active" : ""
+                    }`}
+                    type="button"
+                    key={category.name}
+                    aria-pressed={selectedCategory === category.name}
+                    onClick={() => setSelectedCategory(category.name)}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <p className="search-results-count" aria-live="polite">
+              {filteredProducts.length}{" "}
+              {filteredProducts.length === 1 ? "product" : "products"} found
+              {selectedCategory !== "All" && ` in ${selectedCategory}`}
+              {searchQuery.trim() && ` for "${searchQuery.trim()}"`}
+            </p>
           </div>
+
+          {filteredProducts.length > 0 ? (
+            <div className="product-grid">
+              {filteredProducts.map((product) => (
+                <article className="product-card" key={product.id}>
+                  <a
+                    className="product-image"
+                    href="#products"
+                    aria-label={`View ${product.name}`}
+                  >
+                    <img src={product.image} alt={product.name} />
+
+                    {product.tag && (
+                      <span className="product-tag">{product.tag}</span>
+                    )}
+                  </a>
+
+                  <div className="product-info">
+                    <div>
+                      <p className="product-category">{product.category}</p>
+                      <h3>{product.name}</h3>
+                    </div>
+
+                    <div className="product-price">
+                      <span>{formatPrice(product.price)}</span>
+
+                      {product.oldPrice && (
+                        <del>{formatPrice(product.oldPrice)}</del>
+                      )}
+                    </div>
+                  </div>
+
+                  <button
+                    className="add-button"
+                    type="button"
+                    onClick={() => addToCart(product)}
+                  >
+                    Add to cart <span>+</span>
+                  </button>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="no-products-found">
+              <span className="no-products-icon">⌕</span>
+              <h3>No products found</h3>
+              <p>
+                Try another search term or choose a different category.
+              </p>
+
+              <button
+                className="button button-dark"
+                type="button"
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedCategory("All");
+                }}
+              >
+                Clear search and filters
+              </button>
+            </div>
+          )}
         </section>
 
         <section className="editorial-section section-pad" id="about">
@@ -408,9 +542,7 @@ function App() {
                   type="button"
                   onClick={() => {
                     setIsCartOpen(false);
-                    document.getElementById("products")?.scrollIntoView({
-                      behavior: "smooth",
-                    });
+                    scrollToProducts();
                   }}
                 >
                   Explore products ↗
