@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import "./App.css";
 
 const products = [
@@ -6,8 +7,8 @@ const products = [
     id: 1,
     name: "Everyday Minimal Watch",
     category: "Accessories",
-    price: 89,
-    oldPrice: 120,
+    price: 8900,
+    oldPrice: 12000,
     image:
       "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=700&q=85",
     tag: "BESTSELLER",
@@ -16,7 +17,7 @@ const products = [
     id: 2,
     name: "Essential Leather Bag",
     category: "Bags",
-    price: 125,
+    price: 12500,
     oldPrice: null,
     image:
       "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=700&q=85",
@@ -26,8 +27,8 @@ const products = [
     id: 3,
     name: "Classic Everyday Sneakers",
     category: "Footwear",
-    price: 95,
-    oldPrice: 115,
+    price: 95000,
+    oldPrice: 115000,
     image:
       "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=85",
     tag: "POPULAR",
@@ -36,7 +37,7 @@ const products = [
     id: 4,
     name: "Modern Studio Headphones",
     category: "Electronics",
-    price: 149,
+    price: 1490,
     oldPrice: null,
     image:
       "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=700&q=85",
@@ -51,7 +52,67 @@ const categories = [
   { name: "Electronics", symbol: "⌁" },
 ];
 
+const formatPrice = (price) => `৳${price.toLocaleString("en-BD")}`;
+
 function App() {
+  const [cart, setCart] = useState([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+
+  const cartTotal = cart.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+
+  const addToCart = (product) => {
+    setCart((currentCart) => {
+      const existingItem = currentCart.find(
+        (item) => item.id === product.id
+      );
+
+      if (existingItem) {
+        return currentCart.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+
+      return [...currentCart, { ...product, quantity: 1 }];
+    });
+
+    setIsCartOpen(true);
+  };
+
+  const increaseQuantity = (productId) => {
+    setCart((currentCart) =>
+      currentCart.map((item) =>
+        item.id === productId
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      )
+    );
+  };
+
+  const decreaseQuantity = (productId) => {
+    setCart((currentCart) =>
+      currentCart
+        .map((item) =>
+          item.id === productId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+        .filter((item) => item.quantity > 0)
+    );
+  };
+
+  const removeFromCart = (productId) => {
+    setCart((currentCart) =>
+      currentCart.filter((item) => item.id !== productId)
+    );
+  };
+
   return (
     <div className="site-shell">
       <div className="announcement">
@@ -59,13 +120,8 @@ function App() {
         <span> Explore the collection ↗</span>
       </div>
 
-      {}
       <header className="site-header">
-        <a
-          className="brand"
-          href="#home"
-          aria-label="Kichu Kinben homepage"
-        >
+        <a className="brand" href="#home" aria-label="Kichu Kinben homepage">
           <span className="brand-main">KICHU</span>
           <span className="brand-sub">KINBEN.</span>
         </a>
@@ -78,16 +134,24 @@ function App() {
         </nav>
 
         <div className="header-actions">
-          <a href="#products" aria-label="Search products">⌕</a>
-          <a href="#account" aria-label="Account">♙</a>
-          <a href="#cart" aria-label="Shopping bag">
-            Bag <span>0</span>
+          <a href="#products" aria-label="Search products">
+            ⌕
           </a>
+          <a href="#account" aria-label="Account">
+            ♙
+          </a>
+          <button
+            className="cart-trigger"
+            type="button"
+            aria-label={`Open shopping bag, ${cartCount} items`}
+            onClick={() => setIsCartOpen(true)}
+          >
+            Bag <span>{cartCount}</span>
+          </button>
         </div>
       </header>
 
       <main>
-        {}
         <section className="hero" id="home">
           <div className="hero-copy">
             <p className="eyebrow">THE EVERYDAY EDIT — 2026</p>
@@ -137,7 +201,6 @@ function App() {
           </div>
         </section>
 
-        {}
         <section className="trust-strip" aria-label="Store benefits">
           <div><span>✳</span> Thoughtfully selected</div>
           <div><span>↗</span> Secure checkout</div>
@@ -145,7 +208,6 @@ function App() {
           <div><span>♡</span> Made for everyday</div>
         </section>
 
-        {}
         <section className="category-section section-pad" id="categories">
           <div className="section-heading">
             <div>
@@ -167,34 +229,22 @@ function App() {
                 href="#products"
                 key={category.name}
               >
-                <span className="category-number">
-                  0{index + 1}
-                </span>
-
-                <span className="category-symbol">
-                  {category.symbol}
-                </span>
-
-                <span className="category-name">
-                  {category.name}
-                </span>
-
+                <span className="category-number">0{index + 1}</span>
+                <span className="category-symbol">{category.symbol}</span>
+                <span className="category-name">{category.name}</span>
                 <span className="category-arrow">↗</span>
               </a>
             ))}
           </div>
         </section>
 
-        {}
         <section className="products-section section-pad" id="products">
           <div className="section-heading">
             <div>
               <p className="eyebrow">THE CURRENT FAVOURITES</p>
-
               <h2>
                 Considered essentials<span>.</span>
               </h2>
-
               <p className="section-description">
                 Everyday pieces. Exceptional details.
               </p>
@@ -216,26 +266,21 @@ function App() {
                   <img src={product.image} alt={product.name} />
 
                   {product.tag && (
-                    <span className="product-tag">
-                      {product.tag}
-                    </span>
+                    <span className="product-tag">{product.tag}</span>
                   )}
                 </a>
 
                 <div className="product-info">
                   <div>
-                    <p className="product-category">
-                      {product.category}
-                    </p>
-
+                    <p className="product-category">{product.category}</p>
                     <h3>{product.name}</h3>
                   </div>
 
                   <div className="product-price">
-                    <span>${product.price}</span>
+                    <span>{formatPrice(product.price)}</span>
 
                     {product.oldPrice && (
-                      <del>${product.oldPrice}</del>
+                      <del>{formatPrice(product.oldPrice)}</del>
                     )}
                   </div>
                 </div>
@@ -243,18 +288,15 @@ function App() {
                 <button
                   className="add-button"
                   type="button"
-                  onClick={() =>
-                    alert("Shopping cart feature coming soon!")
-                  }
+                  onClick={() => addToCart(product)}
                 >
-                  Add to bag <span>+</span>
+                  Add to cart <span>+</span>
                 </button>
               </article>
             ))}
           </div>
         </section>
 
-        {}
         <section className="editorial-section section-pad" id="about">
           <div className="editorial-image">
             <img
@@ -264,13 +306,9 @@ function App() {
           </div>
 
           <div className="editorial-copy">
-            <p className="eyebrow">
-              A MORE CONSIDERED WAY TO SHOP
-            </p>
+            <p className="eyebrow">A MORE CONSIDERED WAY TO SHOP</p>
 
-            <h2>
-              Good design is never just about looks.
-            </h2>
+            <h2>Good design is never just about looks.</h2>
 
             <p>
               We believe the things you choose should feel right,
@@ -284,10 +322,8 @@ function App() {
           </div>
         </section>
 
-        {}
         <section className="newsletter-section">
           <p className="eyebrow">A NOTE FROM US</p>
-
           <h2>Good things, occasionally.</h2>
 
           <p>
@@ -312,14 +348,11 @@ function App() {
               required
             />
 
-            <button type="submit">
-              Subscribe ↗
-            </button>
+            <button type="submit">Subscribe ↗</button>
           </form>
         </section>
       </main>
 
-      {}
       <footer className="site-footer">
         <a className="brand footer-brand" href="#home">
           <span className="brand-main">KICHU</span>
@@ -334,10 +367,140 @@ function App() {
           <a href="#account">Account</a>
         </div>
 
-        <small>
-          © 2026 KICHU KINBEN. All rights reserved.
-        </small>
+        <small>© 2026 KICHU KINBEN. All rights reserved.</small>
       </footer>
+
+      {isCartOpen && (
+        <div
+          className="cart-overlay"
+          onClick={() => setIsCartOpen(false)}
+        >
+          <aside
+            className="cart-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="cart-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="cart-header">
+              <div>
+                <p className="eyebrow">YOUR SELECTION</p>
+                <h2 id="cart-title">Shopping bag ({cartCount})</h2>
+              </div>
+
+              <button
+                className="cart-close"
+                type="button"
+                aria-label="Close shopping bag"
+                onClick={() => setIsCartOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            {cart.length === 0 ? (
+              <div className="cart-empty">
+                <span className="cart-empty-icon">◇</span>
+                <h3>Your bag is empty</h3>
+                <p>Discover something you love and add it to your bag.</p>
+                <button
+                  className="button button-dark"
+                  type="button"
+                  onClick={() => {
+                    setIsCartOpen(false);
+                    document.getElementById("products")?.scrollIntoView({
+                      behavior: "smooth",
+                    });
+                  }}
+                >
+                  Explore products ↗
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="cart-items">
+                  {cart.map((item) => (
+                    <article className="cart-item" key={item.id}>
+                      <img src={item.image} alt={item.name} />
+
+                      <div className="cart-item-info">
+                        <p className="product-category">{item.category}</p>
+                        <h3>{item.name}</h3>
+                        <p className="cart-item-price">
+                          {formatPrice(item.price)}
+                        </p>
+
+                        <div className="cart-item-controls">
+                          <div className="quantity-control">
+                            <button
+                              type="button"
+                              aria-label={`Decrease ${item.name} quantity`}
+                              onClick={() => decreaseQuantity(item.id)}
+                            >
+                              −
+                            </button>
+
+                            <span>{item.quantity}</span>
+
+                            <button
+                              type="button"
+                              aria-label={`Increase ${item.name} quantity`}
+                              onClick={() => increaseQuantity(item.id)}
+                            >
+                              +
+                            </button>
+                          </div>
+
+                          <button
+                            className="remove-item"
+                            type="button"
+                            onClick={() => removeFromCart(item.id)}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+
+                      <p className="cart-line-total">
+                        {formatPrice(item.price * item.quantity)}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+
+                <div className="cart-footer">
+                  <div className="cart-subtotal">
+                    <span>Subtotal</span>
+                    <strong>{formatPrice(cartTotal)}</strong>
+                  </div>
+
+                  <p className="cart-shipping-note">
+                    Delivery charges are calculated at checkout.
+                  </p>
+
+                  <button
+                    className="button button-dark cart-checkout"
+                    type="button"
+                    onClick={() =>
+                      alert("Checkout will be connected later!")
+                    }
+                  >
+                    Proceed to checkout <span>↗</span>
+                  </button>
+
+                  <button
+                    className="continue-shopping"
+                    type="button"
+                    onClick={() => setIsCartOpen(false)}
+                  >
+                    Continue shopping
+                  </button>
+                </div>
+              </>
+            )}
+          </aside>
+        </div>
+      )}
     </div>
   );
 }
