@@ -1,5 +1,8 @@
+import Register from './pages/Register.jsx'; 
 import { Navigate, Route, Routes, Link } from 'react-router-dom';
 import Login from './pages/Login.jsx';
+
+
 
 function RegisterPlaceholder() {
   return (
@@ -21,7 +24,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<RegisterPlaceholder />} />
+      <Route path="/register" element={<Register />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

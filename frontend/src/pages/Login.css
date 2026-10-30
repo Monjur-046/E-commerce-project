@@ -110,3 +110,10 @@
     padding: 24px 20px;
   }
 }
+
+.auth-card .form-message {
+  margin: 16px 0 0;
+  color: #2563eb;
+  font-size: 13px;
+  line-height: 1.5;
+}
