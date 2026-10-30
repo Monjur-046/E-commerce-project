@@ -6,7 +6,6 @@ import Announcement from "./components/Announcement";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import TrustStrip from "./components/TrustStrip";
-import CategorySection from "./components/CategorySection";
 import ProductSection from "./components/ProductSection";
 import EditorialSection from "./components/EditorialSection";
 import Newsletter from "./components/Newsletter";
@@ -47,11 +46,6 @@ function App() {
   const handleSearch = () => {
     scrollToProducts();
     document.getElementById("product-search")?.focus();
-  };
-
-  const chooseCategory = (categoryName) => {
-    setSelectedCategory(categoryName);
-    scrollToProducts();
   };
 
   const resetFilters = () => {
@@ -123,11 +117,6 @@ function App() {
       <main>
         <Hero />
         <TrustStrip />
-
-        <CategorySection
-          selectedCategory={selectedCategory}
-          onChooseCategory={chooseCategory}
-        />
 
         <ProductSection
           products={filteredProducts}

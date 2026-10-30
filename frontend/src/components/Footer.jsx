@@ -1,10 +1,9 @@
-
 function Footer() {
   return (
     <footer className="site-footer">
       <a className="brand footer-brand" href="#home">
-        <span className="brand-main">KICHU</span>
-        <span className="brand-sub">KINBEN.</span>
+        <span className="brand-main"> KICHU </span>
+        <span className="brand-sub"> KINBEN.</span>
       </a>
 
       <p>Apnar pochonder shopping destination.</p>
