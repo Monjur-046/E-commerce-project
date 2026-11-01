@@ -18,7 +18,10 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const cartCount = cart.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
 
   const cartTotal = cart.reduce(
     (total, item) => total + item.price * item.quantity,
