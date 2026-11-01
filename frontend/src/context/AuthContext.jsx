@@ -8,7 +8,7 @@ function getSavedUser(){
         return savedUser ? JSON.parse(savedUser):null;
 
     }
-    catch (erroe){
+    catch (error){
         console.error('Could not saved user information:', error);
         localStorage.removeItem('userInfo');
         return null;
