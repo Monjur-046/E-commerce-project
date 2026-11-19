@@ -1,4 +1,4 @@
-
+import { Link } from 'react-router-dom';
 function Navbar({ cartCount, onOpenCart, onSearch }) {
   return (
     <header className="site-header">
@@ -26,12 +26,12 @@ function Navbar({ cartCount, onOpenCart, onSearch }) {
           </svg>
         </button>
 
-        <a href="#account" className="account-link" aria-label="Account">
+        <Link to="/login" className="account-link" aria-label="Account">
           <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="8" r="4" />
             <path d="M5 21a7 7 0 0 1 14 0" />
           </svg>
-        </a>
+        </Link>
 
         <button
           className="cart-trigger"
