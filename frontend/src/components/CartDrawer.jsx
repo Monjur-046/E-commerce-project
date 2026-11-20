@@ -1,5 +1,6 @@
 
-import { formatPrice } from "../data/products";
+import {useNavigate} from 'react-router-dom';
+import {formatPrice} from '../data/products';
 
 function CartDrawer({
   isOpen,
@@ -12,7 +13,14 @@ function CartDrawer({
   onRemove,
   onExploreProducts,
 }) {
+  const navigate = useNavigate();
+
   if (!isOpen) return null;
+
+  const handleCheckout = () => {
+    onClose();
+    navigate('/checkout');
+  };
 
   return (
     <div className="cart-overlay" onClick={onClose}>
@@ -67,6 +75,10 @@ function CartDrawer({
                       {formatPrice(item.price)}
                     </p>
 
+                    <p className="cart-stock">
+                      Available stock: {item.stock}
+                    </p>
+
                     <div className="cart-item-controls">
                       <div className="quantity-control">
                         <button
@@ -83,6 +95,7 @@ function CartDrawer({
                           type="button"
                           aria-label={`Increase ${item.name} quantity`}
                           onClick={() => onIncrease(item.id)}
+                          disabled={item.quantity >= item.stock}
                         >
                           +
                         </button>
@@ -96,6 +109,12 @@ function CartDrawer({
                         Remove
                       </button>
                     </div>
+
+                    {item.quantity >= item.stock && (
+                      <p className="cart-stock-limit">
+                        Maximum available quantity reached
+                      </p>
+                    )}
                   </div>
 
                   <p className="cart-line-total">
@@ -118,7 +137,7 @@ function CartDrawer({
               <button
                 className="button button-dark cart-checkout"
                 type="button"
-                onClick={() => alert("Checkout will be connected later!")}
+                onClick={handleCheckout}
               >
                 Proceed to checkout <span>↗</span>
               </button>

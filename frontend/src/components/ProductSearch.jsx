@@ -1,13 +1,16 @@
 
-import { categories } from "../data/products";
-
 function ProductSearch({
+  products,
   searchQuery,
   onSearchChange,
   selectedCategory,
   onCategoryChange,
   resultCount,
 }) {
+  const categories = [...new Set(
+    products.map((product) => product.category).filter(Boolean)
+  )];
+
   return (
     <div className="product-discovery">
       <label className="product-search-box" htmlFor="product-search">
@@ -51,14 +54,14 @@ function ProductSearch({
           {categories.map((category) => (
             <button
               className={`filter-chip ${
-                selectedCategory === category.name ? "active" : ""
+                selectedCategory === category ? "active" : ""
               }`}
               type="button"
-              key={category.name}
-              aria-pressed={selectedCategory === category.name}
-              onClick={() => onCategoryChange(category.name)}
+              key={category}
+              aria-pressed={selectedCategory === category}
+              onClick={() => onCategoryChange(category)}
             >
-              {category.name}
+              {category}
             </button>
           ))}
         </div>

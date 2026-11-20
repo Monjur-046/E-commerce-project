@@ -41,7 +41,7 @@ function Navbar({cartCount, onOpenCart, onSearch}) {
               </svg>
               <span>{user.name}</span>
             </Link>
-            <button type="button" onClick={logout}>
+            <button className="logout-button" type="button" onClick={logout}>
               Logout
             </button>
           </div>

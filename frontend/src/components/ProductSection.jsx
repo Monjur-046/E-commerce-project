@@ -33,13 +33,14 @@ function ProductSection({
         </button>
       </div>
 
-      <ProductSearch
-        searchQuery={searchQuery}
-        onSearchChange={onSearchChange}
-        selectedCategory={selectedCategory}
-        onCategoryChange={onCategoryChange}
-        resultCount={products.length}
-      />
+<ProductSearch
+  products={products}
+  searchQuery={searchQuery}
+  onSearchChange={onSearchChange}
+  selectedCategory={selectedCategory}
+  onCategoryChange={onCategoryChange}
+  resultCount={products.length}
+/>
 
       {products.length > 0 ? (
         <div className="product-grid">
