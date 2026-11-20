@@ -1,7 +1,7 @@
 
 import './Login.css';
 import {useState, useContext} from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import {AuthContext} from '../context/AuthContext';
 
 function Login() {
@@ -11,6 +11,7 @@ function Login() {
   const [loading, setLoading] = useState(false);
 
   const {login} = useContext(AuthContext);
+  const navigate = useNavigate();
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -36,9 +37,7 @@ function Login() {
       }
 
       login(data.user, data.token);
-
-      setMessage('Login successful! Welcome back.');
-      setPassword('');
+      navigate('/profile', {replace: true});
     } catch (error) {
       setMessage(error.message || 'Unable to connect to server');
     } finally {
