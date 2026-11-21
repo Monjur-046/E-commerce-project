@@ -158,34 +158,48 @@ function HomePage() {
     scrollToProducts();
   };
 
-function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
+    <div className="site-shell">
+      <Announcement />
 
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        }
+      <Navbar
+        cartCount={cartCount}
+        onOpenCart={() => setIsCartOpen(true)}
+        onSearch={handleSearch}
       />
 
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute requiredRole="admin">
-            <AdminDashboard />
-          </ProtectedRoute>
-        }
-      />
+      <main>
+        <Hero />
+        <TrustStrip />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        <ProductSection
+          products={filteredProducts}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
+          onAddToCart={addToCart}
+          onResetFilters={resetFilters}
+        />
+
+        <EditorialSection />
+        <Newsletter />
+      </main>
+
+      <Footer />
+
+      <CartDrawer
+        isOpen={isCartOpen}
+        cart={cart}
+        cartCount={cartCount}
+        cartTotal={cartTotal}
+        onClose={() => setIsCartOpen(false)}
+        onIncrease={increaseQuantity}
+        onDecrease={decreaseQuantity}
+        onRemove={removeFromCart}
+        onExploreProducts={exploreProducts}
+      />
+    </div>
   );
 }
 
