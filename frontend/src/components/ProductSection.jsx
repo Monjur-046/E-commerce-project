@@ -1,4 +1,5 @@
 
+import { useNavigate } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import ProductSearch from "./ProductSearch";
 
@@ -11,6 +12,8 @@ function ProductSection({
   onAddToCart,
   onResetFilters,
 }) {
+  const navigate = useNavigate();
+
   return (
     <section className="products-section section-pad" id="products">
       <div className="section-heading">
@@ -27,9 +30,12 @@ function ProductSection({
         <button
           className="text-link shop-all-button"
           type="button"
-          onClick={onResetFilters}
+          onClick={() => {
+            onResetFilters();
+            navigate("/shop");
+          }}
         >
-          Shop all products ↗
+          Shop all products →
         </button>
       </div>
 
