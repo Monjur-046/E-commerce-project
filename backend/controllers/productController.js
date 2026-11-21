@@ -3,7 +3,7 @@ const Product = require('../models/Product');
 
 const createProduct = async (req, res) => {
     try {
-        const { name, description, price, category, image, stock } = req.body;
+        const { name, description, price, category, image, stock, oldPrice, tag } = req.body;
 
         if (!name || !description || price === undefined || !category || !image) {
             return res.status(400).json({
@@ -16,8 +16,10 @@ const createProduct = async (req, res) => {
             name,
             description,
             price,
+            oldPrice,
             category,
             image,
+            tag,
             stock
         });
 
@@ -37,6 +39,25 @@ const createProduct = async (req, res) => {
 const getProducts = async (req, res) => {
     try {
         const products = await Product.find().sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            count: products.length,
+            products
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const getHomeProducts = async (req, res) => {
+    try {
+        const products = await Product.find()
+            .sort({ createdAt: -1 })
+            .limit(8);
 
         res.status(200).json({
             success: true,
@@ -128,6 +149,7 @@ const deleteProduct = async (req, res) => {
 module.exports = {
     createProduct,
     getProducts,
+    getHomeProducts,
     getProductById,
     updateProduct,
     deleteProduct

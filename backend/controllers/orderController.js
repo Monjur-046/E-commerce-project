@@ -49,6 +49,13 @@ const createOrder = async (req, res) => {
             });
         }
 
+        if (paymentMethod === 'online') {
+            return res.status(400).json({
+                success: false,
+                message: 'Online payment is not available through this endpoint'
+            });
+        }
+
         let createdOrder;
 
         await session.withTransaction(async () => {
@@ -86,27 +93,25 @@ const createOrder = async (req, res) => {
             }
 
             const deliveryCharge = deliveryMethod === 'express' ? 150 : 120;
-            const total = subtotal + deliveryCharge;
+            const total = Number((subtotal + deliveryCharge).toFixed(2));
 
-            if (paymentMethod === 'cod') {
-                for (const item of cart.items) {
-                    const updatedProduct = await Product.findOneAndUpdate(
-                        {
-                            _id: item.product,
-                            stock: { $gte: item.quantity }
-                        },
-                        {
-                            $inc: { stock: -item.quantity }
-                        },
-                        {
-                            new: true,
-                            session
-                        }
-                    );
-
-                    if (!updatedProduct) {
-                        throw new Error('Product stock changed. Please review your cart');
+            for (const item of cart.items) {
+                const updatedProduct = await Product.findOneAndUpdate(
+                    {
+                        _id: item.product,
+                        stock: { $gte: item.quantity }
+                    },
+                    {
+                        $inc: { stock: -item.quantity }
+                    },
+                    {
+                        new: true,
+                        session
                     }
+                );
+
+                if (!updatedProduct) {
+                    throw new Error('Product stock changed. Please review your cart');
                 }
             }
 
@@ -124,6 +129,7 @@ const createOrder = async (req, res) => {
                 deliveryMethod,
                 paymentMethod,
                 paymentStatus: 'pending',
+                stockReserved: true,
                 orderStatus: 'pending',
                 subtotal,
                 deliveryCharge,
@@ -226,11 +232,89 @@ const getAllOrders = async (req, res) => {
     }
 };
 
+const restoreOrderStock = async (order, session) => {
+    if (!order.stockReserved) {
+        return;
+    }
+
+    for (const item of order.items) {
+        const product = await Product.findByIdAndUpdate(
+            item.product,
+            {
+                $inc: { stock: item.quantity }
+            },
+            { session }
+        );
+
+        if (!product) {
+            throw new Error(`Product not found: ${item.name}`);
+        }
+    }
+
+    order.stockReserved = false;
+};
+
+const cancelMyOrder = async (req, res) => {
+    const session = await mongoose.startSession();
+
+    try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid order ID'
+            });
+        }
+
+        let cancelledOrder;
+
+        await session.withTransaction(async () => {
+            const order = await Order.findOne({
+                _id: req.params.id,
+                user: req.user._id
+            }).session(session);
+
+            if (!order) {
+                throw new Error('Order not found');
+            }
+
+            if (!['pending', 'processing'].includes(order.orderStatus)) {
+                throw new Error('This order can no longer be cancelled');
+            }
+
+            if (order.paymentStatus === 'paid') {
+                throw new Error('Paid orders cannot be cancelled directly. Please contact support for a refund');
+            }
+
+            await restoreOrderStock(order, session);
+
+            order.orderStatus = 'cancelled';
+
+            await order.save({ session });
+
+            cancelledOrder = order;
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: 'Your order has been cancelled successfully',
+            order: cancelledOrder
+        });
+
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message || 'Unable to cancel order'
+        });
+    } finally {
+        await session.endSession();
+    }
+};
+
 const updateOrderStatus = async (req, res) => {
     const session = await mongoose.startSession();
 
     try {
-        const {orderStatus} = req.body;
+        const { orderStatus } = req.body;
 
         const allowedStatuses = [
             'pending',
@@ -265,22 +349,28 @@ const updateOrderStatus = async (req, res) => {
                 throw new Error('Cancelled orders cannot be reopened');
             }
 
-            if (orderStatus === 'cancelled' && order.orderStatus !== 'cancelled') {
-                if (order.paymentMethod === 'cod') {
-                    for (const item of order.items) {
-                        await Product.findByIdAndUpdate(
-                            item.product,
-                            {
-                                $inc: {stock: item.quantity}
-                            },
-                            {session}
-                        );
-                    }
+            if (order.orderStatus === 'delivered' && orderStatus !== 'delivered') {
+                throw new Error('Delivered orders cannot be changed');
+            }
+
+            if (
+                orderStatus === 'cancelled' &&
+                order.orderStatus !== 'cancelled'
+            ) {
+                if (!['pending', 'processing'].includes(order.orderStatus)) {
+                    throw new Error('This order can no longer be cancelled');
                 }
+
+                if (order.paymentStatus === 'paid') {
+                    throw new Error('Paid orders cannot be cancelled directly. Please process a refund first');
+                }
+
+                await restoreOrderStock(order, session);
             }
 
             order.orderStatus = orderStatus;
-            await order.save({session});
+
+            await order.save({ session });
         });
 
         const updatedOrder = await Order.findById(req.params.id)
@@ -295,7 +385,7 @@ const updateOrderStatus = async (req, res) => {
     } catch (error) {
         return res.status(400).json({
             success: false,
-            message: error.message || 'Unable to update order status'
+            message: error.message || 'Unable to update order'
         });
     } finally {
         await session.endSession();
@@ -307,5 +397,6 @@ module.exports = {
     getMyOrders,
     getOrderById,
     getAllOrders,
-    updateOrderStatus
+    updateOrderStatus,
+    cancelMyOrder
 };

@@ -8,6 +8,7 @@ const {
     getProfile,
     getAdminDashboard,
     changeAdminCredentials,
+    changePassword,
     createAdmin,
     getAllAdmins,
     updateAdmin,
@@ -21,8 +22,9 @@ router.post('/register', registerUser);
 router.post('/login', loginUser);
 
 router.get('/profile', protect, getProfile);
-router.get('/admin', protect, admin, getAdminDashboard);
+router.put('/change-password', protect, changePassword);
 
+router.get('/admin', protect, admin, getAdminDashboard);
 router.put('/admin/account', protect, admin, changeAdminCredentials);
 
 router.post('/admin/create', protect, admin, createAdmin);

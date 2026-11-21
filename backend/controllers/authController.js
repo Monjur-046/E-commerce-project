@@ -91,7 +91,11 @@ const loginUser = async (req, res) => {
         }
 
         const token = jwt.sign(
-            { id: user._id, role: user.role },
+            {
+                id: user._id,
+                role: user.role,
+                tokenVersion: user.tokenVersion ?? 0
+            },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
         );
@@ -119,8 +123,69 @@ const getProfile = async (req, res) => {
     res.status(200).json({
         success: true,
         message: 'Profile fetched successfully',
-        user: req.user
+        user: {
+            id: req.user._id,
+            name: req.user.name,
+            email: req.user.email,
+            role: req.user.role
+        }
     });
+};
+
+const changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Current password and new password are required'
+            });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'New password must be at least 6 characters'
+            });
+        }
+
+        const user = await User.findById(req.user._id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(
+            currentPassword,
+            user.password
+        );
+
+        if (!isPasswordCorrect) {
+            return res.status(401).json({
+                success: false,
+                message: 'Current password is incorrect'
+            });
+        }
+
+        user.password = await bcrypt.hash(newPassword, 12);
+        user.tokenVersion = (user.tokenVersion ?? 0) + 1;
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Password changed successfully. Please login again.'
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Unable to change password'
+        });
+    }
 };
 
 const getAdminDashboard = async (req, res) => {
@@ -206,6 +271,7 @@ const changeAdminCredentials = async (req, res) => {
             }
 
             user.password = await bcrypt.hash(newPassword, 12);
+            user.tokenVersion = (user.tokenVersion ?? 0) + 1;
         }
 
         await user.save();
@@ -367,6 +433,7 @@ const updateAdmin = async (req, res) => {
             }
 
             adminUser.password = await bcrypt.hash(password, 12);
+            adminUser.tokenVersion = (adminUser.tokenVersion ?? 0) + 1;
         }
 
         await adminUser.save();
@@ -448,6 +515,7 @@ module.exports = {
     registerUser,
     loginUser,
     getProfile,
+    changePassword,
     getAdminDashboard,
     changeAdminCredentials,
     createAdmin,
