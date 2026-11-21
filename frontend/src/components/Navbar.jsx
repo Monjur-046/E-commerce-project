@@ -1,5 +1,11 @@
 
-function Navbar({ cartCount, onOpenCart, onSearch }) {
+import {Link} from 'react-router-dom';
+import {useContext} from 'react';
+import {AuthContext} from '../context/AuthContext';
+
+function Navbar({cartCount, onOpenCart, onSearch}) {
+  const {user, logout} = useContext(AuthContext);
+
   return (
     <header className="site-header">
       <a className="brand" href="#home" aria-label="Kichu Kinben homepage">
@@ -26,12 +32,27 @@ function Navbar({ cartCount, onOpenCart, onSearch }) {
           </svg>
         </button>
 
-        <a href="#account" className="account-link" aria-label="Account">
-          <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="8" r="4" />
-            <path d="M5 21a7 7 0 0 1 14 0" />
-          </svg>
-        </a>
+        {user ? (
+          <div className="account-link">
+            <Link to="/profile" aria-label="User profile">
+              <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M5 21a7 7 0 0 1 14 0" />
+              </svg>
+              <span>{user.name}</span>
+            </Link>
+            <button type="button" onClick={logout}>
+              Logout
+            </button>
+          </div>
+        ) : (
+          <Link to="/login" className="account-link" aria-label="Account">
+            <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M5 21a7 7 0 0 1 14 0" />
+            </svg>
+          </Link>
+        )}
 
         <button
           className="cart-trigger"

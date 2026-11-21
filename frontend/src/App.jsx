@@ -158,48 +158,34 @@ function HomePage() {
     scrollToProducts();
   };
 
+function App() {
   return (
-    <div className="site-shell">
-      <Announcement />
+    <Routes>
+      <Route path="/" element={<Home />} />
 
-      <Navbar
-        cartCount={cartCount}
-        onOpenCart={() => setIsCartOpen(true)}
-        onSearch={handleSearch}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
       />
 
-      <main>
-        <Hero />
-        <TrustStrip />
-
-        <ProductSection
-          products={filteredProducts}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-          onAddToCart={addToCart}
-          onResetFilters={resetFilters}
-        />
-
-        <EditorialSection />
-        <Newsletter />
-      </main>
-
-      <Footer />
-
-      <CartDrawer
-        isOpen={isCartOpen}
-        cart={cart}
-        cartCount={cartCount}
-        cartTotal={cartTotal}
-        onClose={() => setIsCartOpen(false)}
-        onIncrease={increaseQuantity}
-        onDecrease={decreaseQuantity}
-        onRemove={removeFromCart}
-        onExploreProducts={exploreProducts}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
       />
-    </div>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 
