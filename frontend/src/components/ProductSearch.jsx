@@ -1,7 +1,6 @@
 
-import { categories } from "../data/products";
-
 function ProductSearch({
+  categories = [],
   searchQuery,
   onSearchChange,
   selectedCategory,
@@ -51,14 +50,14 @@ function ProductSearch({
           {categories.map((category) => (
             <button
               className={`filter-chip ${
-                selectedCategory === category.name ? "active" : ""
+                selectedCategory === category ? "active" : ""
               }`}
               type="button"
-              key={category.name}
-              aria-pressed={selectedCategory === category.name}
-              onClick={() => onCategoryChange(category.name)}
+              key={category}
+              aria-pressed={selectedCategory === category}
+              onClick={() => onCategoryChange(category)}
             >
-              {category.name}
+              {category}
             </button>
           ))}
         </div>

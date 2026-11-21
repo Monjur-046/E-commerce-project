@@ -2543,3 +2543,17 @@ img {
   cursor: not-allowed;
   background: #777;
 }
+.footer-links .footer-account-link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.footer-links .footer-account-link:hover {
+  text-decoration: underline;
+}

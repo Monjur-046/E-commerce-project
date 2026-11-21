@@ -1,4 +1,5 @@
 
+import { useNavigate } from "react-router-dom";
 import { formatPrice } from "../data/products";
 
 function CartDrawer({
@@ -12,7 +13,14 @@ function CartDrawer({
   onRemove,
   onExploreProducts,
 }) {
+  const navigate = useNavigate();
+
   if (!isOpen) return null;
+
+  const goToCheckout = () => {
+    onClose();
+    navigate("/checkout");
+  };
 
   return (
     <div className="cart-overlay" onClick={onClose}>
@@ -41,7 +49,7 @@ function CartDrawer({
 
         {cart.length === 0 ? (
           <div className="cart-empty">
-            <span className="cart-empty-icon">◇</span>
+            <span className="cart-empty-icon">🛍</span>
             <h3>Your cart is empty</h3>
             <p>Discover something you love and add it to your cart.</p>
 
@@ -50,7 +58,7 @@ function CartDrawer({
               type="button"
               onClick={onExploreProducts}
             >
-              Explore products ↗
+              Explore products →
             </button>
           </div>
         ) : (
@@ -118,9 +126,9 @@ function CartDrawer({
               <button
                 className="button button-dark cart-checkout"
                 type="button"
-                onClick={() => alert("Checkout will be connected later!")}
+                onClick={goToCheckout}
               >
-                Proceed to checkout <span>↗</span>
+                Proceed to checkout <span>→</span>
               </button>
 
               <button

@@ -37,7 +37,12 @@ function Login() {
       }
 
       login(data.user, data.token);
-      navigate('/profile', {replace: true});
+
+      if (data.user.role === 'admin') {
+        navigate('/admin', {replace: true});
+      } else {
+        navigate('/profile', {replace: true});
+      }
     } catch (error) {
       setMessage(error.message || 'Unable to connect to server');
     } finally {
@@ -48,7 +53,7 @@ function Login() {
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <h1> WELCOME BACK </h1>
+        <h1>WELCOME BACK</h1>
         <p>Sign in to your account to continue shopping.</p>
 
         <form onSubmit={handleSubmit}>

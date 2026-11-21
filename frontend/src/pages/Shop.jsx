@@ -55,6 +55,14 @@ function Shop() {
     fetchProducts();
   }, [fetchProducts]);
 
+  const categories = [
+    ...new Set(
+      products
+        .map((product) => product.category?.trim())
+        .filter(Boolean)
+    )
+  ].sort((a, b) => a.localeCompare(b));
+
   const filteredProducts = products.filter((product) => {
     const matchesSearch = `${product.name} ${product.category}`
       .toLowerCase()
@@ -62,7 +70,7 @@ function Shop() {
 
     const matchesCategory =
       selectedCategory === "All" ||
-      product.category === selectedCategory;
+      product.category?.trim() === selectedCategory;
 
     return matchesSearch && matchesCategory;
   });
@@ -129,7 +137,7 @@ function Shop() {
         ) : (
           <>
             <ProductSearch
-              products={products}
+              categories={categories}
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
               selectedCategory={selectedCategory}

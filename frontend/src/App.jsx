@@ -2,6 +2,7 @@
 import { useState, useEffect, useContext } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthContext } from "./context/AuthContext";
+import { CartContext } from "./context/CartContext";
 import "./App.css";
 import Announcement from "./components/Announcement";
 import Navbar from "./components/Navbar";
@@ -35,11 +36,20 @@ function ProtectedRoute({ children, adminOnly = false }) {
 }
 
 function HomePage() {
-  const [cart, setCart] = useState([]);
   const [products, setProducts] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const {
+    cart,
+    cartCount,
+    cartTotal,
+    addToCart,
+    increaseQuantity,
+    decreaseQuantity,
+    removeFromCart
+  } = useContext(CartContext);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -65,15 +75,13 @@ function HomePage() {
     fetchProducts();
   }, []);
 
-  const cartCount = cart.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
-
-  const cartTotal = cart.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+  const categories = [
+    ...new Set(
+      products
+        .map((product) => product.category?.trim())
+        .filter(Boolean)
+    )
+  ].sort((a, b) => a.localeCompare(b));
 
   const filteredProducts = products
     .slice()
@@ -85,7 +93,7 @@ function HomePage() {
 
       const matchesCategory =
         selectedCategory === "All" ||
-        product.category === selectedCategory;
+        product.category?.trim() === selectedCategory;
 
       return matchesSearch && matchesCategory;
     })
@@ -105,52 +113,6 @@ function HomePage() {
   const resetFilters = () => {
     setSearchQuery("");
     setSelectedCategory("All");
-  };
-
-  const addToCart = (product) => {
-    setCart((currentCart) => {
-      const existingItem = currentCart.find(
-        (item) => item.id === product.id
-      );
-
-      if (existingItem) {
-        return currentCart.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-
-      return [...currentCart, { ...product, quantity: 1 }];
-    });
-  };
-
-  const increaseQuantity = (productId) => {
-    setCart((currentCart) =>
-      currentCart.map((item) =>
-        item.id === productId
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      )
-    );
-  };
-
-  const decreaseQuantity = (productId) => {
-    setCart((currentCart) =>
-      currentCart
-        .map((item) =>
-          item.id === productId
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
-        )
-        .filter((item) => item.quantity > 0)
-    );
-  };
-
-  const removeFromCart = (productId) => {
-    setCart((currentCart) =>
-      currentCart.filter((item) => item.id !== productId)
-    );
   };
 
   const exploreProducts = () => {
@@ -174,6 +136,7 @@ function HomePage() {
 
         <ProductSection
           products={filteredProducts}
+          categories={categories}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           selectedCategory={selectedCategory}

@@ -5,6 +5,7 @@ import ProductSearch from "./ProductSearch";
 
 function ProductSection({
   products,
+  categories,
   searchQuery,
   onSearchChange,
   selectedCategory,
@@ -40,6 +41,7 @@ function ProductSection({
       </div>
 
       <ProductSearch
+        categories={categories}
         searchQuery={searchQuery}
         onSearchChange={onSearchChange}
         selectedCategory={selectedCategory}
