@@ -1,12 +1,14 @@
 
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useContext} from 'react';
 import {Link, useLocation, useNavigate} from 'react-router-dom';
+import {CartContext} from '../context/CartContext';
 import {formatPrice} from '../data/products';
 import './OrderConfirmation.css';
 
 function OrderConfirmation() {
   const location = useLocation();
   const navigate = useNavigate();
+  const {clearCart} = useContext(CartContext);
 
   const [order, setOrder] = useState(location.state?.order || null);
   const [loading, setLoading] = useState(!location.state?.order);
@@ -56,6 +58,13 @@ function OrderConfirmation() {
         }
 
         setOrder(data.order);
+
+        if (
+          data.order.paymentMethod === 'cod' ||
+          data.order.paymentStatus === 'paid'
+        ) {
+          clearCart();
+        }
       } catch (err) {
         setError(err.message);
       } finally {
@@ -64,7 +73,7 @@ function OrderConfirmation() {
     };
 
     fetchOrder();
-  }, [orderId, navigate]);
+  }, [orderId, navigate, clearCart]);
 
   if (loading) {
     return (

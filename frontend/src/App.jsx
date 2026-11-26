@@ -10,9 +10,9 @@ import Hero from "./components/Hero";
 import TrustStrip from "./components/TrustStrip";
 import ProductSection from "./components/ProductSection";
 import EditorialSection from "./components/EditorialSection";
-import Newsletter from "./components/Newsletter";
 import Footer from "./components/Footer";
 import CartDrawer from "./components/CartDrawer";
+import ProductQuickView from "./components/ProductQuickView";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
@@ -20,6 +20,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import Shop from "./pages/Shop";
+import ResetPassword from "./pages/ResetPassword";
+import ForgotPassword from "./pages/ForgotPassword";
 
 function ProtectedRoute({ children, adminOnly = false }) {
   const { user } = useContext(AuthContext);
@@ -38,6 +40,7 @@ function ProtectedRoute({ children, adminOnly = false }) {
 function HomePage() {
   const [products, setProducts] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
@@ -120,6 +123,10 @@ function HomePage() {
     scrollToProducts();
   };
 
+  const handleAddToCart = async (product) => {
+    await addToCart(product);
+  };
+
   return (
     <div className="site-shell">
       <Announcement />
@@ -141,12 +148,12 @@ function HomePage() {
           onSearchChange={setSearchQuery}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
-          onAddToCart={addToCart}
+          onAddToCart={handleAddToCart}
+          onViewDetails={setSelectedProduct}
           onResetFilters={resetFilters}
         />
 
         <EditorialSection />
-        <Newsletter />
       </main>
 
       <Footer />
@@ -162,6 +169,12 @@ function HomePage() {
         onRemove={removeFromCart}
         onExploreProducts={exploreProducts}
       />
+
+      <ProductQuickView
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        onAddToCart={handleAddToCart}
+      />
     </div>
   );
 }
@@ -173,6 +186,8 @@ function App() {
       <Route path="/shop" element={<Shop />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       <Route
         path="/profile"

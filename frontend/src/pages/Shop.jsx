@@ -6,6 +6,7 @@ import ProductSearch from "../components/ProductSearch";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CartDrawer from "../components/CartDrawer";
+import ProductQuickView from "../components/ProductQuickView";
 import {CartContext} from "../context/CartContext";
 import "./Shop.css";
 
@@ -26,6 +27,7 @@ function Shop() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -152,6 +154,7 @@ function Shop() {
                     key={product.id}
                     product={product}
                     onAddToCart={handleAddToCart}
+                    onViewDetails={setSelectedProduct}
                   />
                 ))}
               </div>
@@ -186,6 +189,12 @@ function Shop() {
         onDecrease={decreaseQuantity}
         onRemove={removeFromCart}
         onExploreProducts={exploreProducts}
+      />
+
+      <ProductQuickView
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        onAddToCart={handleAddToCart}
       />
     </div>
   );

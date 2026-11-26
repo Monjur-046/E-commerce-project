@@ -10,6 +10,7 @@ import EditorialSection from "./components/EditorialSection";
 import Newsletter from "./components/Newsletter";
 import Footer from "./components/Footer";
 import CartDrawer from "./components/CartDrawer";
+import ProductQuickView from "./components/ProductQuickView";
 import {AuthContext} from "./context/AuthContext";
 import {CartContext} from "./context/CartContext";
 
@@ -31,6 +32,7 @@ function Home() {
   const [productsError, setProductsError] = useState("");
 
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
@@ -60,6 +62,14 @@ function Home() {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
+
+  const categories = [
+    ...new Set(
+      products
+        .map((product) => product.category?.trim())
+        .filter(Boolean)
+    )
+  ].sort((a, b) => a.localeCompare(b));
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch = `${product.name} ${product.category}`
@@ -125,11 +135,13 @@ function Home() {
         ) : (
           <ProductSection
             products={filteredProducts}
+            categories={categories}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
             onAddToCart={handleAddToCart}
+            onViewDetails={setSelectedProduct}
             onResetFilters={resetFilters}
           />
         )}
@@ -150,6 +162,12 @@ function Home() {
         onDecrease={decreaseQuantity}
         onRemove={removeFromCart}
         onExploreProducts={exploreProducts}
+      />
+
+      <ProductQuickView
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        onAddToCart={handleAddToCart}
       />
     </div>
   );

@@ -4,15 +4,17 @@ import ProductCard from "./ProductCard";
 import ProductSearch from "./ProductSearch";
 
 function ProductSection({
-  products,
-  categories,
+  products = [],
+  categories = [],
   searchQuery,
   onSearchChange,
   selectedCategory,
   onCategoryChange,
   onAddToCart,
+  onViewDetails,
   onResetFilters,
 }) {
+  console.log("ProductSection callback:", typeof onViewDetails);
   const navigate = useNavigate();
 
   return (
@@ -56,6 +58,7 @@ function ProductSection({
               key={product.id}
               product={product}
               onAddToCart={onAddToCart}
+              onViewDetails={onViewDetails}
             />
           ))}
         </div>

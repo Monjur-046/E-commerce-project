@@ -1,7 +1,8 @@
 
 import { formatPrice } from "../data/products";
 
-function ProductCard({ product, onAddToCart }) {
+function ProductCard({ product, onAddToCart, onViewDetails }) {
+  console.log("ProductCard callback:", typeof onViewDetails);
   const stock = Number(product.stock) || 0;
 
   const isOutOfStock = stock <= 0;
@@ -9,10 +10,18 @@ function ProductCard({ product, onAddToCart }) {
 
   return (
     <article className="product-card">
-      <a
+      <button
         className="product-image"
-        href="#products"
-        aria-label={`View ${product.name}`}
+        type="button"
+        aria-label={`View details of ${product.name}`}
+        onClick={() => onViewDetails(product)}
+        style={{
+          width: "100%",
+          padding: 0,
+          border: 0,
+          textAlign: "left",
+          cursor: "pointer"
+        }}
       >
         <img src={product.image} alt={product.name} />
 
@@ -23,12 +32,28 @@ function ProductCard({ product, onAddToCart }) {
         {isOutOfStock && (
           <span className="product-tag">Out of Stock</span>
         )}
-      </a>
+      </button>
 
       <div className="product-info">
         <div>
           <p className="product-category">{product.category}</p>
-          <h3>{product.name}</h3>
+
+          <button
+            type="button"
+            onClick={() => onViewDetails(product)}
+            style={{
+              display: "block",
+              padding: 0,
+              border: 0,
+              background: "transparent",
+              color: "inherit",
+              textAlign: "left",
+              font: "inherit",
+              cursor: "pointer"
+            }}
+          >
+            <h3>{product.name}</h3>
+          </button>
 
           <p className="product-stock">
             {isOutOfStock ? (
@@ -61,7 +86,7 @@ function ProductCard({ product, onAddToCart }) {
         onClick={() => onAddToCart(product)}
       >
         {isOutOfStock ? (
-          'Out of Stock'
+          "Out of Stock"
         ) : (
           <>
             Add to cart <span>+</span>
