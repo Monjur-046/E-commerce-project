@@ -1,0 +1,92 @@
+.shop-page {
+  min-height: 70vh;
+  padding-top: 55px;
+  padding-bottom: 90px;
+}
+
+.shop-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 45px;
+  font-size: 13px;
+  color: #777;
+}
+
+.shop-breadcrumb a {
+  color: #171717;
+  text-decoration: none;
+}
+
+.shop-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.shop-heading {
+  text-align: center;
+  margin-bottom: 55px;
+}
+
+.shop-heading .eyebrow {
+  font-size: 11px;
+  letter-spacing: 2px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.shop-heading h1 {
+  font-size: clamp(34px, 5vw, 58px);
+  font-weight: 500;
+  letter-spacing: -2px;
+  margin: 0 0 15px;
+}
+
+.shop-heading h1 span {
+  color: #a58b65;
+}
+
+.shop-heading > p:last-child {
+  color: #777;
+  font-size: 14px;
+}
+
+.shop-results {
+  display: flex;
+  justify-content: space-between;
+  margin: 25px 0;
+  color: #777;
+  font-size: 13px;
+}
+
+.shop-message {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.shop-message h2 {
+  margin-bottom: 12px;
+}
+
+.shop-message p {
+  color: #777;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+  .shop-page {
+    padding-top: 30px;
+    padding-bottom: 55px;
+  }
+
+  .shop-breadcrumb {
+    margin-bottom: 30px;
+  }
+
+  .shop-heading {
+    margin-bottom: 35px;
+  }
+
+  .shop-heading h1 {
+    letter-spacing: -1px;
+  }
+}
