@@ -1,12 +1,17 @@
 # KICHU KINBEN – Full-Stack E-commerce Website
 
-A full-stack e-commerce application built with React.js, Node.js, Express.js and MongoDB.
+A full-stack e-commerce application built with React.js, Node.js, Express.js, and MongoDB.
+
+## Live Project
+
+- **Customer Website:** https://kichu-kinben-main.vercel.app/
+- **Admin Dashboard:** https://kichu-kinben-main.vercel.app/admin
 
 ## Project Overview
 
-KICHU KINBEN is an online shopping platform that allows customers to browse products, search by category, manage shopping carts, place orders and track their purchases.
+KICHU KINBEN is a full-stack online shopping platform that allows customers to browse products, search and filter products, manage shopping carts, place orders, make payments, and track their purchases.
 
-The application also provides an admin dashboard for managing products, orders, inventory and administrator accounts.
+The application also provides an admin dashboard for managing products, inventory, customer orders, and store operations.
 
 ## Technologies Used
 
@@ -14,6 +19,7 @@ The application also provides an admin dashboard for managing products, orders, 
 - React.js
 - Vite
 - React Router DOM
+- JavaScript
 - CSS3
 
 ### Backend
@@ -23,10 +29,18 @@ The application also provides an admin dashboard for managing products, orders, 
 - Mongoose
 - JWT Authentication
 - bcryptjs
-- Nodemailer
+
+### Email Integration
+- Brevo Transactional Email API
+- Password Reset Email Verification
 
 ### Payment Integration
 - aamarPay Payment Gateway (Sandbox)
+
+### Deployment
+- Vercel – Frontend Hosting
+- Render – Backend Hosting
+- MongoDB Atlas – Database
 
 ## Main Features
 
@@ -35,34 +49,38 @@ The application also provides an admin dashboard for managing products, orders, 
 - JWT-based Authentication
 - Forgot Password and Password Reset via Email
 - Browse Products
-- Product Search and Category Filtering
-- Product Quick View
+- Product Search
+- Category Filtering
+- Product Details and Quick View
 - Shopping Cart Management
 - Cart Quantity Updates
+- Cart Persistence
 - Checkout
 - Cash on Delivery (COD)
 - Online Payment through aamarPay
+- Payment Verification
 - Payment Success and Failure Handling
 - Order History
-- Order Cancellation
+- Order Status Tracking
 - Customer Profile Management
 - Change Password
 
 ### Admin Features
 - Admin Dashboard
 - Product Management
-- Add, Update and Delete Products
+- Add, Update, and Delete Products
 - Product Stock Management
 - Order Management
+- View Customer Orders
 - Update Order Status
-- Admin Account Management
-- Create, Update and Delete Admin Accounts
-- Change Admin Credentials
+- Admin Authentication
+- Protected Admin Routes
+- Role-based Access Control
 
 ## Project Structure
 
 ```text
-our-ecommerce/
+E-commerce-project/
 │
 ├── backend/
 │   ├── config/
@@ -98,7 +116,7 @@ our-ecommerce/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/Monjur-046/E-commerce-project.git
+git clone https://github.com/BMSOHAN/E-commerce-project.git
 cd E-commerce-project
 ```
 
@@ -109,9 +127,9 @@ cd backend
 npm install
 ```
 
-Create a `.env` file inside the backend directory.
+Create a `.env` file inside the `backend` directory.
 
-Add the following environment variables:
+Add the following environment variables using your own credentials:
 
 ```env
 PORT=5000
@@ -126,13 +144,15 @@ AAMARPAY_BASE_URL=https://sandbox.aamarpay.com/jsonpost.php
 FRONTEND_URL=http://localhost:5173
 BACKEND_PUBLIC_URL=http://localhost:5000
 
-EMAIL_USER=your_email_address
-EMAIL_PASS=your_email_app_password
+EMAIL_USER=your_verified_sender_email
+BREVO_API_KEY=your_brevo_api_key
 
 PASSWORD_RESET_URL=http://localhost:5173/reset-password
 ```
 
-Replace the placeholder values with your own credentials. Never upload your actual `.env` file or secret credentials to GitHub.
+Replace all placeholder values with your actual credentials.
+
+**Important:** Never upload your actual `.env` file, API keys, passwords, or secret credentials to GitHub.
 
 Start the backend development server:
 
@@ -140,16 +160,10 @@ Start the backend development server:
 npm run dev
 ```
 
-The backend will run on:
+The backend will run at:
 
 ```text
 http://localhost:5000
-```
-
-Backend health check:
-
-```text
-http://localhost:5000/api/health
 ```
 
 ### 3. Frontend Setup
@@ -186,32 +200,51 @@ The application supports:
 
 - Cash on Delivery (COD)
 - aamarPay Online Payment Integration
-- Payment verification and order handling
-- Successful and failed payment handling
-- Stock updates based on order and payment outcomes
+- Payment Gateway Verification
+- Successful and Failed Payment Handling
+- Order Payment Status Management
+- Stock Reservation and Restoration
 
-**Note:** The current aamarPay integration uses sandbox credentials and the sandbox gateway. Live transactions require approved production credentials and the live gateway configuration.
+**Note:** The current aamarPay integration uses sandbox credentials and the sandbox gateway. Live transactions require approved production credentials and the appropriate live gateway configuration.
+
+## Email Integration
+
+Brevo Transactional Email API is used for password reset emails.
+
+The password reset process includes:
+
+- Secure password reset token generation
+- Token hashing
+- Token expiration
+- Email delivery through Brevo API
+- Password reset verification
+
+A valid Brevo API key and verified sender email are required for production email delivery.
 
 ## Security
 
-- Passwords are hashed using bcryptjs.
-- JWT-based user authentication.
-- Protected customer and admin routes.
-- Role-based authorization.
-- Password reset through email verification tokens.
-- Password changes invalidate previous login sessions.
-- Sensitive credentials are stored in environment variables.
-- Environment files are excluded from Git tracking.
+- Password hashing using bcryptjs
+- JWT-based authentication
+- Protected customer and admin routes
+- Role-based authorization
+- Secure password reset tokens
+- Password reset token expiration
+- Environment-based configuration
+- Sensitive credentials excluded from Git tracking
 
 ## Deployment
 
-The project is intended to be deployed using:
+The project is deployed using:
 
-- **Frontend:** Vercel
-- **Backend:** Render
-- **Database:** MongoDB Atlas
+| Service | Platform |
+|---|---|
+| Frontend | Vercel |
+| Backend | Render |
+| Database | MongoDB Atlas |
+| Email Service | Brevo |
+| Payment Gateway | aamarPay Sandbox |
 
-Production deployment requires configuring the appropriate environment variables, frontend/backend URLs, CORS settings and payment gateway credentials.
+Production deployment requires the appropriate environment variables, frontend and backend URLs, database configuration, email API credentials, and payment gateway credentials.
 
 ## Developers
 
