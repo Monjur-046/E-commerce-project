@@ -261,6 +261,7 @@ const forgotPassword = async (req, res) => {
                 `
             });
         } catch (emailError) {
+            console.error('Password reset email error:', emailError);
             user.resetPasswordToken = undefined;
             user.resetPasswordExpires = undefined;
             await user.save();
