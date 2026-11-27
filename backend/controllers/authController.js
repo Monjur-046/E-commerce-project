@@ -4,7 +4,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 
 const registerUser = async (req, res) => {
     try {
@@ -213,8 +212,8 @@ const forgotPassword = async (req, res) => {
         }
 
         if (
+            !process.env.BREVO_API_KEY ||
             !process.env.EMAIL_USER ||
-            !process.env.EMAIL_PASS ||
             !process.env.PASSWORD_RESET_URL
         ) {
             return res.status(500).json({
@@ -234,36 +233,57 @@ const forgotPassword = async (req, res) => {
 
         await user.save();
 
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
-
         const resetUrl = `${process.env.PASSWORD_RESET_URL}?token=${resetToken}`;
 
         try {
-            await transporter.sendMail({
-                from: `"Kichu Kinben" <${process.env.EMAIL_USER}>`,
-                to: user.email,
-                subject: 'Kichu Kinben - Password Reset',
-                html: `
-                    <h2>Password Reset Request</h2>
-                    <p>Hello ${user.name},</p>
-                    <p>Click the button below to reset your password.</p>
-                    <a href="${resetUrl}" style="display:inline-block;padding:12px 20px;background:#111;color:#fff;text-decoration:none;border-radius:5px;">
-                        Reset Password
-                    </a>
-                    <p>This link will expire in 15 minutes.</p>
-                    <p>If you did not request this, please ignore this email.</p>
-                `
-            });
+            const emailResponse = await fetch(
+                'https://api.brevo.com/v3/smtp/email',
+                {
+                    method: 'POST',
+                    headers: {
+                        'accept': 'application/json',
+                        'api-key': process.env.BREVO_API_KEY,
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        sender: {
+                            name: 'Kichu Kinben',
+                            email: process.env.EMAIL_USER
+                        },
+                        to: [
+                            {
+                                email: user.email,
+                                name: user.name
+                            }
+                        ],
+                        subject: 'Kichu Kinben - Password Reset',
+                        htmlContent: `
+                            <h2>Password Reset Request</h2>
+                            <p>Hello ${user.name},</p>
+                            <p>Click the button below to reset your password.</p>
+                            <a href="${resetUrl}" style="display:inline-block;padding:12px 20px;background:#111;color:#fff;text-decoration:none;border-radius:5px;">
+                                Reset Password
+                            </a>
+                            <p>This link will expire in 15 minutes.</p>
+                            <p>If you did not request this, please ignore this email.</p>
+                        `
+                    })
+                }
+            );
+
+            const responseText = await emailResponse.text();
+
+            if (!emailResponse.ok) {
+                throw new Error(
+                    `Brevo API error (${emailResponse.status}): ${responseText}`
+                );
+            }
         } catch (emailError) {
             console.error('Password reset email error:', emailError);
+
             user.resetPasswordToken = undefined;
             user.resetPasswordExpires = undefined;
+
             await user.save();
 
             return res.status(500).json({
@@ -277,6 +297,8 @@ const forgotPassword = async (req, res) => {
             message: 'If the email is registered, a password reset link has been sent.'
         });
     } catch (error) {
+        console.error('Forgot password error:', error);
+
         res.status(500).json({
             success: false,
             message: 'Unable to process password reset request'
