@@ -8,6 +8,7 @@ import Footer from "../components/Footer";
 import CartDrawer from "../components/CartDrawer";
 import ProductQuickView from "../components/ProductQuickView";
 import {CartContext} from "../context/CartContext";
+import {API_BASE_URL} from "../config/api";
 import "./Shop.css";
 
 function Shop() {
@@ -31,7 +32,7 @@ function Shop() {
 
   const fetchProducts = useCallback(async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/products");
+      const response = await fetch(`${API_BASE_URL}/api/products`);
       const data = await response.json();
 
       if (!response.ok) {

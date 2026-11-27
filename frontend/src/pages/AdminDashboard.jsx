@@ -2,6 +2,7 @@
 import {useContext, useEffect, useState} from 'react';
 import {AuthContext} from '../context/AuthContext';
 import {formatPrice} from '../data/products';
+import {API_BASE_URL} from '../config/api';
 
 function AdminDashboard() {
   const {user, login} = useContext(AuthContext);
@@ -59,7 +60,7 @@ function AdminDashboard() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/products');
+      const response = await fetch(`${API_BASE_URL}/api/products`);
       const data = await response.json();
 
       if (!response.ok) {
@@ -76,7 +77,7 @@ function AdminDashboard() {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/orders/admin/all', {
+      const response = await fetch(`${API_BASE_URL}/api/orders/admin/all`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -106,7 +107,7 @@ function AdminDashboard() {
 
   const fetchAdmins = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/admin/list', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/admin/list`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -152,8 +153,8 @@ function AdminDashboard() {
     try {
       const response = await fetch(
         editingId
-          ? `http://localhost:5000/api/products/${editingId}`
-          : 'http://localhost:5000/api/products',
+          ? `${API_BASE_URL}/api/products/${editingId}`
+          : `${API_BASE_URL}/api/products`,
         {
           method: editingId ? 'PUT' : 'POST',
           headers: {
@@ -213,7 +214,7 @@ function AdminDashboard() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/products/${id}`,
+        `${API_BASE_URL}/api/products/${id}`,
         {
           method: 'DELETE',
           headers: {
@@ -286,7 +287,7 @@ function AdminDashboard() {
 
     try {
       const response = await fetch(
-        'http://localhost:5000/api/auth/admin/account',
+        `${API_BASE_URL}/api/auth/admin/account`,
         {
           method: 'PUT',
           headers: {
@@ -334,7 +335,7 @@ function AdminDashboard() {
 
     try {
       const response = await fetch(
-        'http://localhost:5000/api/auth/admin/create',
+        `${API_BASE_URL}/api/auth/admin/create`,
         {
           method: 'POST',
           headers: {
@@ -401,7 +402,7 @@ function AdminDashboard() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/auth/admin/${editingAdminId}`,
+        `${API_BASE_URL}/api/auth/admin/${editingAdminId}`,
         {
           method: 'PUT',
           headers: {
@@ -444,7 +445,7 @@ function AdminDashboard() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/auth/admin/${adminId}`,
+        `${API_BASE_URL}/api/auth/admin/${adminId}`,
         {
           method: 'DELETE',
           headers: {
@@ -479,7 +480,7 @@ function AdminDashboard() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/orders/admin/${orderId}`,
+        `${API_BASE_URL}/api/orders/admin/${orderId}`,
         {
           method: 'PUT',
           headers: {
@@ -1010,56 +1011,57 @@ function AdminDashboard() {
                       {order.orderStatus}
                     </span>
                   </div>
-<div className="admin-order-info">
-  <p>
-    <span>Customer</span>
-    <strong>{order.user?.name || order.shippingAddress?.fullName || 'Unknown'}</strong>
-  </p>
 
-  <p>
-    <span>Email</span>
-    <strong>{order.user?.email || order.shippingAddress?.email || 'Unavailable'}</strong>
-  </p>
+                  <div className="admin-order-info">
+                    <p>
+                      <span>Customer</span>
+                      <strong>{order.user?.name || order.shippingAddress?.fullName || 'Unknown'}</strong>
+                    </p>
 
-  <p>
-    <span>Phone Number</span>
-    <strong>{order.shippingAddress?.phone || 'Unavailable'}</strong>
-  </p>
+                    <p>
+                      <span>Email</span>
+                      <strong>{order.user?.email || order.shippingAddress?.email || 'Unavailable'}</strong>
+                    </p>
 
-  <p>
-    <span>Full Address</span>
-    <strong>
-      {order.shippingAddress?.address || 'Address unavailable'}
-    </strong>
-  </p>
+                    <p>
+                      <span>Phone Number</span>
+                      <strong>{order.shippingAddress?.phone || 'Unavailable'}</strong>
+                    </p>
 
-  <p>
-    <span>City / District</span>
-    <strong>{order.shippingAddress?.city || 'Unavailable'}</strong>
-  </p>
+                    <p>
+                      <span>Full Address</span>
+                      <strong>
+                        {order.shippingAddress?.address || 'Address unavailable'}
+                      </strong>
+                    </p>
 
-  <p>
-    <span>Postal Code</span>
-    <strong>{order.shippingAddress?.postalCode || 'Unavailable'}</strong>
-  </p>
+                    <p>
+                      <span>City / District</span>
+                      <strong>{order.shippingAddress?.city || 'Unavailable'}</strong>
+                    </p>
 
-  <p>
-    <span>Order Date</span>
-    <strong>
-      {new Date(order.createdAt).toLocaleDateString()}
-    </strong>
-  </p>
+                    <p>
+                      <span>Postal Code</span>
+                      <strong>{order.shippingAddress?.postalCode || 'Unavailable'}</strong>
+                    </p>
 
-  <p>
-    <span>Payment Method</span>
-    <strong>{order.paymentMethod?.toUpperCase()}</strong>
-  </p>
+                    <p>
+                      <span>Order Date</span>
+                      <strong>
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </strong>
+                    </p>
 
-  <p>
-    <span>Payment Status</span>
-    <strong>{order.paymentStatus}</strong>
-  </p>
-</div>
+                    <p>
+                      <span>Payment Method</span>
+                      <strong>{order.paymentMethod?.toUpperCase()}</strong>
+                    </p>
+
+                    <p>
+                      <span>Payment Status</span>
+                      <strong>{order.paymentStatus}</strong>
+                    </p>
+                  </div>
 
                   <div className="admin-order-items">
                     <h4>Ordered Products</h4>

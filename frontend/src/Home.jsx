@@ -1,5 +1,6 @@
 
 import {useState, useEffect, useContext, useCallback} from "react";
+import { API_BASE_URL } from "./config/api";
 import "./App.css";
 import Announcement from "./components/Announcement";
 import Navbar from "./components/Navbar";
@@ -38,7 +39,7 @@ function Home() {
 
   const fetchProducts = useCallback(async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/products/home");
+      const response = await fetch(`${API_BASE_URL}/api/products/home`);
       const data = await response.json();
 
       if (!response.ok) {

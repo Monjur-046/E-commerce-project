@@ -3,6 +3,7 @@ import {useContext, useEffect, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {AuthContext} from '../context/AuthContext';
 import {formatPrice} from '../data/products';
+import {API_BASE_URL} from '../config/api';
 
 function Profile() {
   const {user} = useContext(AuthContext);
@@ -26,7 +27,7 @@ function Profile() {
       const token = localStorage.getItem('token');
 
       const response = await fetch(
-        'http://localhost:5000/api/orders/my-orders',
+        `${API_BASE_URL}/api/orders/my-orders`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -74,7 +75,7 @@ function Profile() {
       const token = localStorage.getItem('token');
 
       const response = await fetch(
-        'http://localhost:5000/api/auth/change-password',
+        `${API_BASE_URL}/api/auth/change-password`,
         {
           method: 'PUT',
           headers: {
@@ -126,7 +127,7 @@ function Profile() {
       const token = localStorage.getItem('token');
 
       const response = await fetch(
-        `http://localhost:5000/api/orders/${orderId}/cancel`,
+        `${API_BASE_URL}/api/orders/${orderId}/cancel`,
         {
           method: 'PUT',
           headers: {

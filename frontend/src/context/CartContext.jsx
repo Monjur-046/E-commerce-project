@@ -1,6 +1,7 @@
 
 import {createContext, useCallback, useContext, useEffect, useState} from 'react';
 import {AuthContext} from './AuthContext';
+import {API_BASE_URL} from '../config/api';
 
 export const CartContext = createContext(null);
 
@@ -25,7 +26,7 @@ export function CartProvider({children}) {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/cart', {
+      const response = await fetch(`${API_BASE_URL}/api/cart`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -57,7 +58,7 @@ export function CartProvider({children}) {
 
     if (user && token) {
       try {
-        const response = await fetch('http://localhost:5000/api/cart/add', {
+        const response = await fetch(`${API_BASE_URL}/api/cart/add`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -112,8 +113,8 @@ export function CartProvider({children}) {
 
         const response = await fetch(
           isRemoving
-            ? `http://localhost:5000/api/cart/remove/${productId}`
-            : `http://localhost:5000/api/cart/update/${productId}`,
+            ? `${API_BASE_URL}/api/cart/remove/${productId}`
+            : `${API_BASE_URL}/api/cart/update/${productId}`,
           {
             method: isRemoving ? 'DELETE' : 'PUT',
             headers: {

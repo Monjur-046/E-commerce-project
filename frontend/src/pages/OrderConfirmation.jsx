@@ -3,6 +3,7 @@ import {useEffect, useState, useContext} from 'react';
 import {Link, useLocation, useNavigate} from 'react-router-dom';
 import {CartContext} from '../context/CartContext';
 import {formatPrice} from '../data/products';
+import {API_BASE_URL} from '../config/api';
 import './OrderConfirmation.css';
 
 function OrderConfirmation() {
@@ -43,7 +44,7 @@ function OrderConfirmation() {
         }
 
         const response = await fetch(
-          `http://localhost:5000/api/orders/${orderId}`,
+          `${API_BASE_URL}/api/orders/${orderId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`

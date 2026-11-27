@@ -3,6 +3,7 @@ import { useState, useEffect, useContext } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthContext } from "./context/AuthContext";
 import { CartContext } from "./context/CartContext";
+import { API_BASE_URL } from "./config/api";
 import "./App.css";
 import Announcement from "./components/Announcement";
 import Navbar from "./components/Navbar";
@@ -57,7 +58,7 @@ function HomePage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/products");
+        const response = await fetch(`${API_BASE_URL}/api/products`);
         const data = await response.json();
 
         if (!response.ok) {

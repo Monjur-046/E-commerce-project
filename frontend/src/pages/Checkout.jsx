@@ -3,6 +3,7 @@ import {useEffect, useState, useContext} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {AuthContext} from '../context/AuthContext';
 import {formatPrice} from '../data/products';
+import {API_BASE_URL} from '../config/api';
 import './Checkout.css';
 
 function Checkout() {
@@ -40,7 +41,7 @@ function Checkout() {
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/cart', {
+        const response = await fetch(`${API_BASE_URL}/api/cart`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -89,8 +90,8 @@ function Checkout() {
 
     try {
       const endpoint = paymentMethod === 'online'
-        ? 'http://localhost:5000/api/payments/initiate'
-        : 'http://localhost:5000/api/orders';
+        ? `${API_BASE_URL}/api/payments/initiate`
+        : `${API_BASE_URL}/api/orders`;
 
       const response = await fetch(endpoint, {
         method: 'POST',
